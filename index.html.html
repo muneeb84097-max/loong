@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LongCat Video Avatar 1.5 - AI Talking Head Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-indigo: #4f46e5;
+            --primary-pink: #ec4899;
+            --bg-dark: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-input: #252542;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --border-color: #33334d;
+            --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #ec4899 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--accent-gradient);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-indigo);
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-indigo);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .file-upload {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary-indigo);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .file-upload-hint {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .slider-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-value {
+            background: var(--bg-input);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-indigo);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-gradient);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .preview-area {
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border-radius: 12px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .preview-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .preview-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .video-preview {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .progress-container {
+            width: 100%;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 0.75rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-indigo);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-input);
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-indigo);
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--primary-indigo);
+            text-decoration: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .examples-section {
+            margin-top: 2rem;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .example-card {
+            background: var(--bg-input);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .example-card:hover {
+            border-color: var(--primary-indigo);
+            transform: scale(1.02);
+        }
+
+        .example-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .example-label {
+            padding: 0.75rem;
+            font-size: 0.875rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">LongCat Video Avatar <span class="version-badge">v1.5</span></h1>
+            <p class="tagline">Audio-driven talking-head video generation powered by AI</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="controls-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Input Settings
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Reference Image</label>
+                        <div class="file-upload" id="imageUpload">
+                            <input type="file" accept="image/*" id="imageInput">
+                            <div class="file-upload-icon">📷</div>
+                            <div class="file-upload-text">Drop image here or click to browse</div>
+                            <div class="file-upload-hint">Supports JPG, PNG, WebP</div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Audio File</label>
+                        <div class="file-upload" id="audioUpload">
+                            <input type="file" accept="audio/*" id="audioInput">
+                            <div class="file-upload-icon">🎵</div>
+                            <div class="file-upload-text">Drop audio here or click to browse</div>
+                            <div class="file-upload-hint">Supports WAV, MP3, M4A</div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Text Prompt</label>
+                        <textarea class="input-field" id="promptInput" placeholder="Describe the video you want to generate..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Negative Prompt (Optional)</label>
+                        <textarea class="input-field" id="negativePromptInput" placeholder="Things to avoid in the output..."></textarea>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 1.5rem;">
+                    <div class="panel-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Generation Settings
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Resolution</label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-value="480p">480p</button>
+                            <button class="toggle-btn" data-value="720p">720p</button>
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label class="input-label">Inference Steps</label>
+                            <span class="slider-value" id="stepsValue">8</span>
+                        </div>
+                        <input type="range" id="stepsSlider" min="1" max="50" value="8">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label class="input-label">Text Guidance Scale</label>
+                            <span class="slider-value" id="textCfgValue">4.0</span>
+                        </div>
+                        <input type="range" id="textCfgSlider" min="1" max="10" step="0.1" value="4.0">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label class="input-label">Audio Guidance Scale</label>
+                            <span class="slider-value" id="audioCfgValue">4.0</span>
+                        </div>
+                        <input type="range" id="audioCfgSlider" min="1" max="10" step="0.1" value="4.0">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Seed (Optional)</label>
+                        <input type="number" class="input-field" id="seedInput" placeholder="Random">
+                    </div>
+
+                    <button class="generate-btn" id="generateBtn">
+                        <span class="loading-spinner" id="loadingSpinner"></span>
+                        <span id="btnText">Generate Video</span>
+                    </button>
+
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Initializing...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-panel">
+                <div class="panel" style="height: 100%;">
+                    <div class="panel-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Preview
+                    </div>
+                    <div class="preview-area" id="previewArea">
+                        <div class="preview-placeholder" id="previewPlaceholder">
+                            <div class="preview-placeholder-icon">🎬</div>
+                            <p>Your generated video will appear here</p>
+                        </div>
+                        <video class="video-preview" id="videoPreview" controls></video>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples-section">
+            <div class="panel">
+                <div class="panel-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    Example Presets
+                </div>
+                <div class="examples-grid">
+                    <div class="example-card" onclick="loadExample('character')">
+                        <div class="example-thumb">👤</div>
+                        <div class="example-label">Character Portrait</div>
+                    </div>
+                    <div class="example-card" onclick="loadExample('orc')">
+                        <div class="example-thumb">🧟</div>
+                        <div class="example-label">Orc Warrior</div>
+                    </div>
+                    <div class="example-card" onclick="loadExample('photoreal')">
+                        <div class="example-thumb">📸</div>
+                        <div class="example-label">Photorealistic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🎙️</div>
+                <div class="feature-title">Audio-Driven Animation</div>
+                <div class="feature-desc">Synchronize lip movements perfectly with your audio input using advanced audio encoding.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Fast Inference</div>
+                <div class="feature-desc">8-step distilled model for rapid video generation without sacrificing quality.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">High Quality Output</div>
+                <div class="feature-desc">Generate up to 720p videos with realistic facial expressions and movements.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <div class="feature-title">Fine-Grained Control</div>
+                <div class="feature-desc">Adjust text and audio guidance scales independently for precise control.</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by <a href="https://github.com/meituan-longcat/LongCat-Video" target="_blank">LongCat-Video</a> | 
+            Weights on <a href="https://huggingface.co/meituan-longcat/LongCat-Video-Avatar-1.5" target="_blank">Hugging Face</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // UI Interactions
+        const stepsSlider = document.getElementById('stepsSlider');
+        const stepsValue = document.getElementById('stepsValue');
+        const textCfgSlider = document.getElementById('textCfgSlider');
+        const textCfgValue = document.getElementById('textCfgValue');
+        const audioCfgSlider = document.getElementById('audioCfgSlider');
+        const audioCfgValue = document.getElementById('audioCfgValue');
+        const generateBtn = document.getElementById('generateBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const btnText = document.getElementById('btnText');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+
+        // Update slider values
+        stepsSlider.addEventListener('input', (e) => {
+            stepsValue.textContent = e.target.value;
+        });
+
+        textCfgSlider.addEventListener('input', (e) => {
+            textCfgValue.textContent = e.target.value;
+        });
+
+        audioCfgSlider.addEventListener('input', (e) => {
+            audioCfgValue.textContent = e.target.value;
+        });
+
+        // Toggle buttons
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // File upload visual feedback
+        ['imageUpload', 'audioUpload'].forEach(id => {
+            const upload = document.getElementById(id);
+            const input = upload.querySelector('input');
+            
+            input.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    upload.style.borderColor = 'var(--primary-indigo)';
+                    upload.querySelector('.file-upload-text').textContent = e.target.files[0].name;
+                }
+            });
+        });
+
+        // Generate button
+        generateBtn.addEventListener('click', async () => {
+            const imageFile = document.getElementById('imageInput').files[0];
+            const audioFile = document.getElementById('audioInput').files[0];
+            const prompt = document.getElementById('promptInput').value;
+
+            if (!imageFile || !audioFile) {
+                alert('Please upload both an image and audio file');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.disabled = true;
+            loadingSpinner.style.display = 'block';
+            btnText.textContent = 'Generating...';
+            progressContainer.style.display = 'block';
+            previewPlaceholder.style.display = 'none';
+
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) progress = 90;
+                progressFill.style.width = progress + '%';
+                
+                const stages = ['Loading models...', 'Encoding audio...', 'Processing image...', 'Generating frames...', 'Finalizing...'];
+                const stageIndex = Math.floor((progress / 100) * stages.length);
+                progressText.textContent = stages[Math.min(stageIndex, stages.length - 1)];
+            }, 500);
+
+            // Simulate API call
+            setTimeout(() => {
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Complete!';
+
+                // Reset UI
+                setTimeout(() => {
+                    generateBtn.disabled = false;
+                    loadingSpinner.style.display = 'none';
+                    btnText.textContent = 'Generate Video';
+                    
+                    // Show placeholder video
+                    videoPreview.style.display = 'block';
+                    videoPreview.src = 'data:video/mp4;base64,';
+                }, 500);
+            }, 5000);
+        });
+
+        // Load example
+        function loadExample(type) {
+            const examples = {
+                character: {
+                    prompt: 'A person talking naturally, maintaining eye contact with the camera, professional lighting',
+                    image: 'assets/avatar/single/character.png',
+                    audio: 'assets/avatar/single/hello.wav'
+                },
+                orc: {
+                    prompt: 'An orc warrior speaking with fierce expression, dramatic lighting, fantasy setting',
+                    image: 'assets/avatar/examples/orc_warrior.png',
+                    audio: 'assets/avatar/examples/audio/orc_warrior_voice.wav'
+                },
+                photoreal: {
+                    prompt: 'Photorealistic person speaking with natural expressions, soft studio lighting',
+                    image: 'assets/avatar/examples/photoreal_person.png',
+                    audio: 'assets/avatar/examples/audio/photoreal_person_voice.wav'
+                }
+            };
+
+            const example = examples[type];
+            if (example) {
+                document.getElementById('promptInput').value = example.prompt;
+            }
+        }
+    </script>
+</body>
+</html>
