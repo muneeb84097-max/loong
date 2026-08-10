@@ -1,0 +1,36 @@
+{
+  "version": "elevenlabs-example-voices-v4",
+  "text": "Hello there! You can now generate expressive talking-avatar videos from one image and a matching voice.",
+  "items": [
+    {
+      "slug": "character_voice",
+      "voice": "Gamze - Cartoon Character, Animated Voice",
+      "voice_id": "Hr3W7yWIljG9YBJn39oK",
+      "text": "Hello there! You can now generate expressive talking-avatar videos from one image and a matching voice.",
+      "tempo": 1.455436288659794,
+      "raw_duration": 7.058866,
+      "wav": "assets/avatar/examples/audio/character_voice.wav",
+      "duration": 4.95
+    },
+    {
+      "slug": "orc_warrior_voice",
+      "voice": "Azgar - Intimidating Orc Troll",
+      "voice_id": "3VkFsBHdRPqWKsitgYhJ",
+      "text": "Hello there! You can now generate expressive talking-avatar videos from one image and a matching voice.",
+      "tempo": 1.5128878350515467,
+      "raw_duration": 7.337506,
+      "wav": "assets/avatar/examples/audio/orc_warrior_voice.wav",
+      "duration": 4.95
+    },
+    {
+      "slug": "photoreal_person_voice",
+      "voice": "Eric - Smooth, Trustworthy",
+      "voice_id": "cjVigY5qzO86Huf0OWal",
+      "text": "Hello there! You can now generate expressive talking-avatar videos from one image and a matching voice.",
+      "tempo": 1.144579595959596,
+      "raw_duration": 5.665669,
+      "wav": "assets/avatar/examples/audio/photoreal_person_voice.wav",
+      "duration": 4.95
+    }
+  ]
+}
